@@ -1,5 +1,5 @@
-import { CompilerRequest, CompilerResponse } from './compiler';
-import { spawn } from 'node:child_process';
+import { CompilerRequest, CompilerResponse } from "./compiler";
+import { spawn } from "node:child_process";
 import fs from "fs";
 
 const DIR_NAME = "programs";
@@ -16,13 +16,13 @@ export async function compileAndExecute(request: CompilerRequest): Promise<Compi
         return {
             success: true,
             output: output,
-        }
+        };
     } catch (err) {
         let error = err instanceof Error ? err.message : String(err);
         return {
             success: false,
-            error: error
-        }
+            error: error,
+        };
     }
 }
 
@@ -47,14 +47,14 @@ async function compile(fileId: Number): Promise<void> {
                 `./${DIR_NAME}/${FILE_NAME}-${fileId}`,
                 `./${DIR_NAME}/${FILE_NAME}-${fileId}.cpp`,
             ]);
-            
+
             compileCommand.stderr.on("data", (data) => {
                 success = false;
                 errorMessage += data.toString();
             });
-    
+
             compileCommand.on("exit", () => {
-                if (success) resolve()
+                if (success) resolve();
                 else reject(errorMessage);
             });
 
@@ -77,7 +77,7 @@ async function execute(fileId: number, request: CompilerRequest): Promise<string
             const executeCommand = spawn(`./${DIR_NAME}/${FILE_NAME}-${fileId}`, []);
             executeCommand.stdin.write(request.input);
             executeCommand.stdin.end();
-            
+
             executeCommand.stdout.on("data", (data) => {
                 outputMessage += data.toString();
             });
@@ -86,9 +86,9 @@ async function execute(fileId: number, request: CompilerRequest): Promise<string
                 success = false;
                 errorMessage += data.toString();
             });
-    
+
             executeCommand.on("exit", () => {
-                if (success) resolve(outputMessage)
+                if (success) resolve(outputMessage);
                 else reject(errorMessage);
             });
 

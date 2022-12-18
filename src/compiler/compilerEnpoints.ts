@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { validateRequest  } from "./CompilerMultiTestsRequest";
+import { validateRequest } from "./CompilerMultiTestsRequest";
 import { compileAndExecute } from "./compilerService";
 
 export const compileCode = async (req: Request, res: Response) => {
@@ -18,5 +18,3 @@ export const compileCode = async (req: Request, res: Response) => {
         res.status(500).json(err);
     }
 };
-
-

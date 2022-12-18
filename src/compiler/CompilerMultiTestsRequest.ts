@@ -3,15 +3,15 @@ import { Union, Literal, Static, Record, String } from "runtypes";
 const Language = Union(Literal("cpp"), Literal("cs"), Literal("c"), Literal("java"), Literal("py"));
 type Language = Static<typeof Language>;
 
-export const CompilerMultiTestsRequest  = Record({
+export const CompilerMultiTestsRequest = Record({
     code: String,
     language: Language,
     input: String,
 });
 
-export type CompilerMultiTestsRequest = Static<typeof CompilerMultiTestsRequest >;
+export type CompilerMultiTestsRequest = Static<typeof CompilerMultiTestsRequest>;
 
-export const sanitizeRequest = (c: CompilerMultiTestsRequest ) => {
+export const sanitizeRequest = (c: CompilerMultiTestsRequest) => {
     return {
         code: c.code,
         language: c.language,
@@ -19,7 +19,7 @@ export const sanitizeRequest = (c: CompilerMultiTestsRequest ) => {
     } as CompilerMultiTestsRequest;
 };
 
-type validCodeOrError = [true, CompilerMultiTestsRequest ] | [false, unknown];
+type validCodeOrError = [true, CompilerMultiTestsRequest] | [false, unknown];
 
 export const validateRequest = (req: unknown): validCodeOrError => {
     try {

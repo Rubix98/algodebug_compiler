@@ -7,25 +7,25 @@ This compiler is running on: http://srv16.mikr.us:40042 (work in progress)
 AlgoDebug application: http://srv16.mikr.us:20232  
 AlgoDebug repository: https://github.com/Rubix98/algodebug
 
-
 ## Api call
 
 ### POST `/compile`
 
 #### Request
 
-| Parameter  | Description                                                              |
-| ---------- | ------------------------------------------------------------------------ |
-| "code"     | Code of the program.                                                     |
-| "language" | Language that the program is written in (For C++ language it is "cpp").  |
-| "input"    | Input data for standard input of the program.                            |
+| Parameter  | Description                                                             |
+| ---------- | ----------------------------------------------------------------------- |
+| "code"     | Code of the program.                                                    |
+| "language" | Language that the program is written in (For C++ language it is "cpp"). |
+| "input"    | Input data for standard input of the program.                           |
 
 #### Response
-| Parameter  | Description                                                               |
-| ---------- | ------------------------------------------------------------------------- |
-| "success"  | `true` if the program was correctly compiled and run, `false` otherwise.  |
-| "output"   | Standard output of the program (if `success == true`).                    |
-| "error"    | Error message. (if `success == false`).                                   |
+
+| Parameter | Description                                                              |
+| --------- | ------------------------------------------------------------------------ |
+| "success" | `true` if the program was correctly compiled and run, `false` otherwise. |
+| "output"  | Standard output of the program (if `success == true`).                   |
+| "error"   | Error message. (if `success == false`).                                  |
 
 ## Environmental variables
 
@@ -37,7 +37,7 @@ If you want to change these values locally, you can override them in `.env.local
 ## Running
 
 To run compiler:  
-`npm install`  
+`npm install`
 
 then you have two options:
 
@@ -45,7 +45,6 @@ then you have two options:
     OR
 -   Compile to javascript yourself with `npm run build` and then you can use `npm start`  
     (note: you will need to recompile after introducing changes)
-
 
 ### Running application with docker
 
