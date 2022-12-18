@@ -1,0 +1,8 @@
+node_modules
+dist
+Dockerfile
+.gitignore
+.dockerignore
+.prettierignore
+.prettier.*
+programs
