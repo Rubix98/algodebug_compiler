@@ -1,3 +1,5 @@
+export type validTypeOrError<T> = [true, T] | [false, unknown];
+
 export type CompilerRequest = {
     code: string;
     input: string;

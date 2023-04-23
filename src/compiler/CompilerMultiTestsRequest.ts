@@ -1,4 +1,5 @@
 import { Union, Literal, Static, Record, String } from "runtypes";
+import { validTypeOrError } from "../types";
 
 const Language = Union(Literal("cpp"), Literal("cs"), Literal("c"), Literal("java"), Literal("py"));
 type Language = Static<typeof Language>;
@@ -19,9 +20,7 @@ export const sanitizeRequest = (c: CompilerMultiTestsRequest) => {
     } as CompilerMultiTestsRequest;
 };
 
-type validCodeOrError = [true, CompilerMultiTestsRequest] | [false, unknown];
-
-export const validateRequest = (req: unknown): validCodeOrError => {
+export const validateRequest = (req: unknown): validTypeOrError<CompilerMultiTestsRequest> => {
     try {
         return [true, sanitizeRequest(CompilerMultiTestsRequest.check(req))];
     } catch (error) {
