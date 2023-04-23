@@ -1,10 +1,13 @@
 import { CompilerRequest, CompilerResponse, validTypeOrError } from "../types";
 import { spawn } from "node:child_process";
-import fs from "fs";
 import { isPromise } from "node:util/types";
+import fs from "fs";
 
 const DIR_NAME = "programs";
 const FILE_NAME = "program";
+
+// 256MB of unicode characters (or likely less depending on characters used)
+const MAX_OUTPUT_LENGTH = 256 * 1024 * 1024 / 4;
 const TIMEOUT = 10; // limit for execution time in seconds
 
 const asyncTryCatchAssign = async <T>(promise: Promise<T> | (() => Promise<T>)): Promise<validTypeOrError<T>> => {
@@ -52,7 +55,7 @@ export const compileAndExecute = async (request: CompilerRequest): Promise<Compi
     if (!okExecute) {
         return {
             success: false,
-            error: getErrorMessage(fileId),
+            error: getErrorMessage(output),
         };
     } else {
         return {
@@ -138,6 +141,13 @@ const execute = async (fileId: number, request: CompilerRequest): Promise<string
         try {
             executionProcess.stdout.on("data", (data) => {
                 outputMessage += data.toString();
+
+                if (outputMessage.length > MAX_OUTPUT_LENGTH) {
+                    success = false;
+                    console.log(new Blob([outputMessage]).size);
+                    errorMessage += `Error: Output size limit exceeded. Your program output exceeded the limit of ${MAX_OUTPUT_LENGTH} characters.`;
+                    executionProcess.kill();
+                }
             });
 
             executionProcess.stderr.on("data", (data) => {
@@ -164,8 +174,10 @@ const execute = async (fileId: number, request: CompilerRequest): Promise<string
 };
 
 const removeProgramFiles = async (fileId: number) => {
-    const codePath = `./${DIR_NAME}/${FILE_NAME}-${fileId}.cpp`;
-    const exePath = `./${DIR_NAME}/${FILE_NAME}-${fileId}`;
+    const path = `./${DIR_NAME}/${FILE_NAME}-${fileId}`;
+
+    const codePath = `${path}.cpp`;
+    const exePath = `${path}`;
 
     fs.access(codePath, fs.constants.F_OK, (err) => {
         if (err) return;
