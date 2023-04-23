@@ -34,7 +34,7 @@ export const compileAndExecute = async (request: CompilerRequest): Promise<Compi
     if (!okCreate) {
         return {
             success: false,
-            error: fileId instanceof Error ? fileId.message : String(fileId),
+            error: getErrorMessage(fileId),
         };
     }
 
