@@ -144,7 +144,6 @@ const execute = async (fileId: number, request: CompilerRequest): Promise<string
 
                 if (outputMessage.length > MAX_OUTPUT_LENGTH) {
                     success = false;
-                    console.log(new Blob([outputMessage]).size);
                     errorMessage += `Error: Output size limit exceeded. Your program output exceeded the limit of ${MAX_OUTPUT_LENGTH} characters.`;
                     executionProcess.kill();
                 }
