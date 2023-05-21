@@ -6,8 +6,8 @@ import fs from "fs";
 const DIR_NAME = "programs";
 const FILE_NAME = "program";
 
-// 256MB of unicode characters (or likely less depending on characters used)
-const MAX_OUTPUT_LENGTH = (1 * 1024 * 1024) / 4; // FIXME: Zmniejszyłem znacząco ten limit, bo vue nie radziło sobie z tak dużą ilością danych.
+// 32MB of unicode characters (or likely less depending on characters used)
+const MAX_OUTPUT_LENGTH = (32 * 1024 * 1024) / 4;
 const TIMEOUT = 10; // limit for execution time in seconds
 
 const asyncTryCatchAssign = async <T>(promise: Promise<T> | (() => Promise<T>)): Promise<validTypeOrError<T>> => {
