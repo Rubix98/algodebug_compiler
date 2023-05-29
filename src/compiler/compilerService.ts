@@ -6,8 +6,8 @@ import fs from "fs";
 const DIR_NAME = "programs";
 const FILE_NAME = "program";
 
-// 256MB of unicode characters (or likely less depending on characters used)
-const MAX_OUTPUT_LENGTH = 256 * 1024 * 1024 / 4;
+// 32MB of unicode characters (or likely less depending on characters used)
+const MAX_OUTPUT_LENGTH = (32 * 1024 * 1024) / 4;
 const TIMEOUT = 10; // limit for execution time in seconds
 
 const asyncTryCatchAssign = async <T>(promise: Promise<T> | (() => Promise<T>)): Promise<validTypeOrError<T>> => {
@@ -58,27 +58,17 @@ export const compileAndExecute = async (request: CompilerRequest): Promise<Compi
             error: getErrorMessage(output),
         };
     } else {
-        return {
-            success: true,
-            output: output,
-        };
+        return output;
     }
 };
 
 const createProgramFile = async (request: CompilerRequest): Promise<number> => {
     let fileId = Math.round(Math.random() * 1000); // some random number from 0 to 1000
 
-    fs.access(`./${DIR_NAME}`, fs.constants.F_OK, (err) => {
-        if (err) {
-            fs.mkdir(`./${DIR_NAME}`, (err) => {
-                if (err) throw err;
-            });
-        }
-    });
-
-    fs.writeFile(`./${DIR_NAME}/${FILE_NAME}-${fileId}.cpp`, request.code, (err) => {
-        if (err) throw err;
-    });
+    if (!fs.existsSync(`./${DIR_NAME}`)) {
+        fs.mkdirSync(`./${DIR_NAME}`);
+    }
+    fs.writeFileSync(`./${DIR_NAME}/${FILE_NAME}-${fileId}.cpp`, request.code);
 
     return fileId;
 };
@@ -123,8 +113,7 @@ const compile = async (fileId: Number): Promise<void> => {
     });
 };
 
-const execute = async (fileId: number, request: CompilerRequest): Promise<string> => {
-    let success = true;
+const execute = async (fileId: number, request: CompilerRequest): Promise<CompilerResponse> => {
     let outputMessage = "";
     let errorMessage = "";
 
@@ -141,26 +130,26 @@ const execute = async (fileId: number, request: CompilerRequest): Promise<string
         try {
             executionProcess.stdout.on("data", (data) => {
                 outputMessage += data.toString();
-
                 if (outputMessage.length > MAX_OUTPUT_LENGTH) {
-                    success = false;
-                    errorMessage += `Error: Output size limit exceeded. Your program output exceeded the limit of ${MAX_OUTPUT_LENGTH} characters.`;
+                    errorMessage = `Error: Output size limit exceeded. Your program output exceeded the limit of ${MAX_OUTPUT_LENGTH} characters.`;
                     executionProcess.kill();
                 }
             });
 
             executionProcess.stderr.on("data", (data) => {
-                success = false;
                 errorMessage += data.toString();
             });
 
             executionProcess.on("exit", () => {
-                if (success) resolve(outputMessage);
-                else reject(errorMessage);
+                resolve({
+                    success: true,
+                    output: outputMessage,
+                    error: errorMessage,
+                });
             });
 
             setTimeout(() => {
-                reject(`Error: Execution timed Out. Your code took too long to execute, over ${TIMEOUT} seconds.`);
+                errorMessage = `Error: Execution timed Out. Your code took too long to execute, over ${TIMEOUT} seconds.`;
                 executionProcess.kill();
             }, TIMEOUT * 1000);
 

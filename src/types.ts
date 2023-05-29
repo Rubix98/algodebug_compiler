@@ -10,6 +10,7 @@ export type CompilerRequest = {
 export type CompilerResponse = {
     success: true;
     output: string;
+    error?: string;
 } | {
     success: false;
     error: string;
